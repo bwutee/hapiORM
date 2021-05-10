@@ -1,0 +1,18 @@
+{
+  "name": "hapi-orm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/boom": "^9.1.0",
+    "@hapi/hapi": "^20.0.1",
+    "hapi-pino": "^8.3.0",
+    "knex": "^0.21.7",
+    "objection": "^2.2.3",
+    "pg": "^8.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6",
+    "prettier": "^2.1.2"
+  }
+}
