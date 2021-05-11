@@ -51,7 +51,11 @@ const init = async () => {
         description: "List of all patient records"
       },
       handler: async (request, h) => {
-        return await Patient.query();
+        const patientsQuery = await Patient.query();
+        if(patientsQuery){
+          return h.response(patientsQuery).code(200);
+        }
+        
       }
     },
     {
@@ -61,7 +65,11 @@ const init = async () => {
         description: "List all companies and the vaccines produced by each"
       },
       handler: async (request, h) =>{
-        return Company.query().withGraphFetched("vaccines")
+        const companyQuery = await Company.query().withGraphFetched("vaccines")
+        if(companyQuery){
+          return h.response(companyQuery).code(200);
+        }
+        
       } 
       
     },
@@ -72,14 +80,22 @@ const init = async () => {
         description: "Retrieve details on patient id, including all vaccines taken by the patient. The company that manufactured vaccines are included for each"
       },
       handler: async (request, h) =>{
-          return await Patient.query().select().where("id",request.params.id).first().withGraphFetched("vaccines.companies")
+          const patientsQueryId = await Patient.query().select().where("id",request.params.id).first().withGraphFetched("vaccines.companies");
+          if(patientsQueryId){
+            return h.response(patientsQueryId).code(200);
+          }
       } 
       
     },
     {
       method: "GET",
       path: "/vaccines",
-      handler: async (request, h) => Vaccine.query().withGraphFetched("companies")
+      handler: async (request, h) => { 
+        const vaccineQuery = await Vaccine.query().withGraphFetched("companies") 
+        if(vaccineQuery){
+          return h.response(vaccineQuery).code(200);
+        }
+      }
     },
 
     
@@ -107,9 +123,22 @@ const init = async () => {
         description: "create new vaccination"
       },
       handler: async (request, h) => 
-        await Patient.relatedQuery("vaccines")
-        .for(request.params.pid)
-        .relate(request.params.vid)
+        {
+          const pid = await Patient.query().where("id",request.params.pid).first();
+          const vid = await Vaccine.query().where("id",request.params.vid).first();
+          if (!pid){
+            return  {statusCode: 404, msg: `patient with id ${request.params.pid} not found.`}
+          }
+          if (!vid){
+            return  {statusCode: 404, msg: `vaccine with id ${request.params.vid} not found.`}
+          }
+
+          const newVaccination =  await Patient.relatedQuery("vaccines")
+          .for(request.params.pid)
+          .relate(request.params.vid)
+        
+          return newVaccination;
+        }
     },
 
     {
