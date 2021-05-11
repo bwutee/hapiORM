@@ -72,7 +72,7 @@ const init = async () => {
         description: "Retrieve details on patient id, including all vaccines taken by the patient. The company that manufactured vaccines are included for each"
       },
       handler: async (request, h) =>{
-          return await Patient.query().select().where("id",request.params.id).first().withGraphFetched("vaccines")
+          return await Patient.query().select().where("id",request.params.id).first().withGraphFetched("vaccines.companies")
       } 
       
     },
